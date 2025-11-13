@@ -27,4 +27,17 @@ public static class ConfigurationExtensions
     {
         builder.WebHost.UseUrls(builder.Configuration["ApplicationUrl"]);
     }
+
+    public static void ConfigureCors(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddCors(options =>
+        {
+            options.AddDefaultPolicy(policy =>
+                    {
+                        policy.WithOrigins("https://nolanmiller.me")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                    });
+        });
+    }
 }

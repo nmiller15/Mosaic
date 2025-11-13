@@ -2,7 +2,7 @@ using Mosaic;
 using Mosaic.Configuration;
 using Mosaic.Shared;
 
-public partial class Program
+public class Program
 {
     private static void Main(string[] args)
     {
@@ -11,6 +11,7 @@ public partial class Program
         builder.Configure();
         builder.ConfigureEmailSettings();
         builder.ConfigureUrls();
+        builder.ConfigureCors();
 
         builder.Services.AddHttpClient("Brevo", client =>
         {
@@ -23,6 +24,7 @@ public partial class Program
 
         var app = builder.Build();
 
+        app.UseCors();
         app.ConfigureEndpoints();
 
         app.Run();
