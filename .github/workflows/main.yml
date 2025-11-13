@@ -42,7 +42,7 @@ jobs:
 
       - name: Deploy to EC2
         run: |
-          rsync -avz --delete --exclude="mosaic.settings.development.json" ./publish/ ubuntu@${{ secrets.EC2_PUBLIC_IP }}:/srv/Mosaic/
+          rsync -avzO --no-perms --delete --exclude="mosaic.settings.development.json" ./publish/ ubuntu@${{ secrets.EC2_PUBLIC_IP }}:/srv/Mosaic/
 
       - name: Restart API
         run: |
