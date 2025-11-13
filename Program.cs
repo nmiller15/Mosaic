@@ -20,6 +20,9 @@ public class Program
             client.DefaultRequestHeaders.Add("Accept", "application/json");
         });
 
+        Console.WriteLine(builder.Configuration["Brevo:BaseUrl"]);
+        Console.WriteLine(builder.Configuration["Brevo:ApiKey"].Split('-').First() + "****");
+
         builder.ConfigureDependencyInjection();
 
         var app = builder.Build();
