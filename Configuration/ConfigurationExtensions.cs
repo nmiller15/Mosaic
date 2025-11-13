@@ -22,4 +22,9 @@ public static class ConfigurationExtensions
                 builder.Configuration.GetSection("Email")
                 );
     }
+
+    public static void ConfigureUrls(this WebApplicationBuilder builder)
+    {
+        builder.WebHost.UseUrls(builder.Configuration["ApplicationUrl"]);
+    }
 }

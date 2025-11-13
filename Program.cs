@@ -10,6 +10,7 @@ public partial class Program
 
         builder.Configure();
         builder.ConfigureEmailSettings();
+        builder.ConfigureUrls();
 
         builder.Services.AddHttpClient("Brevo", client =>
         {
@@ -21,8 +22,6 @@ public partial class Program
         builder.ConfigureDependencyInjection();
 
         var app = builder.Build();
-
-        app.UseHttpsRedirection();
 
         app.ConfigureEndpoints();
 
