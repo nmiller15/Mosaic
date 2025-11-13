@@ -41,8 +41,6 @@ public class BrevoRepository : IBrevoRepository
 
         var response = await Send(request);
 
-        Console.WriteLine(await response.Content.ReadAsStringAsync());
-
         if (response.StatusCode != HttpStatusCode.Created)
         {
             return -1;
