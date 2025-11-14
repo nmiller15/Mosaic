@@ -16,6 +16,11 @@ public class BrevoService : IBrevoService
 
     public async Task<Response<string>> AddToNewsletter(string email)
     {
+        if (_emailService.ValidateEmail(email))
+        {
+            return Response<string>.Failure("Invalid email address.");
+        }
+
         var id = await _brevoRepository.AddContact(new Contact
         {
             Email = email

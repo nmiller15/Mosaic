@@ -1,3 +1,5 @@
+using System.Text.RegularExpressions;
+
 namespace Mosaic.Features.Email
 {
     public class EmailService : IEmailService
@@ -11,5 +13,11 @@ namespace Mosaic.Features.Email
 
         public async Task SendNotificationToSubscribers(string message, string body = "")
         => await _emailRepository.SendNotificationToSubscribers(message, body);
+
+        public bool ValidateEmail(string email)
+        {
+            var pattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
+            return Regex.IsMatch(email, pattern, RegexOptions.IgnoreCase);
+        }
     }
 }
