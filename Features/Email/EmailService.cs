@@ -16,7 +16,7 @@ namespace Mosaic.Features.Email
 
         public bool ValidateEmail(string email)
         {
-            var pattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
+            var pattern = @"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$";
             return Regex.IsMatch(email, pattern, RegexOptions.IgnoreCase);
         }
     }
