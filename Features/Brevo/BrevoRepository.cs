@@ -41,10 +41,12 @@ public class BrevoRepository : IBrevoRepository
 
         var response = await Send(request);
 
+
         if (response.StatusCode != HttpStatusCode.Created)
         {
             return -1;
         }
+
 
         var data = JsonSerializer.Deserialize<BrevoContactCreatedResponse>(await response.Content.ReadAsStringAsync());
         return data.Id;
@@ -92,4 +94,10 @@ struct BrevoFailureRepsonse
 {
     public string Code { get; set; }
     public string Message { get; set; }
+
+    public void Dump()
+    {
+        Console.WriteLine("BrevoFailureResponse: { Code: " +
+                Code + ", Message: " + Message + " }");
+    }
 }
