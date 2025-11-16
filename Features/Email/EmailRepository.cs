@@ -14,45 +14,36 @@ public class EmailRepository : IEmailRepository
         _emailSettings = options.Value;
     }
 
+    public async Task SendEmail(MailMessage message)
+    {
+        var client = new SmtpClient
+        {
+            Host = _emailSettings.SmtpServer,
+            Port = _emailSettings.SmtpPort,
+            EnableSsl = true,
+            DeliveryMethod = SmtpDeliveryMethod.Network,
+            UseDefaultCredentials = false,
+            Credentials = new NetworkCredential(_emailSettings.SmtpUser, _emailSettings.SmtpPassword)
+        };
+        message.From = new MailAddress(_emailSettings.SmtpSender, "Mosaic Notification");
+
+        await client.SendMailAsync(message);
+    }
+
     public async Task SendNotificationToSubscribers(string message, string body = "")
     {
         foreach (string sub in _emailSettings.Subscribers)
         {
-            var retryCount = 3;
-            while (retryCount > 0)
+            var mailMessage = new MailMessage
             {
-                if (await SendEmail(sub, message, body))
-                {
-                    break;
-                }
-                retryCount--;
-            }
+                Subject = message,
+                Body = body
+            };
+
+            mailMessage.To.Add(sub);
+
+            await SendEmail(mailMessage);
         }
     }
 
-    private async Task<bool> SendEmail(string to, string subject, string body)
-    {
-        var message = new MailMessage(_emailSettings.SmtpSender, to)
-        {
-            Subject = subject,
-            Body = body,
-            IsBodyHtml = false
-        };
-
-        using var client = new SmtpClient(_emailSettings.SmtpServer, _emailSettings.SmtpPort)
-        {
-            Credentials = new NetworkCredential(_emailSettings.SmtpSender, _emailSettings.SmtpPassword),
-            EnableSsl = true
-        };
-
-        try
-        {
-            await client.SendMailAsync(message);
-            return true;
-        }
-        catch (Exception _)
-        {
-            return false;
-        }
-    }
 }
