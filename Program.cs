@@ -1,5 +1,6 @@
 using Mosaic;
 using Mosaic.Configuration;
+using Mosaic.Features.Logging;
 using Mosaic.Shared;
 
 public class Program
@@ -23,6 +24,8 @@ public class Program
         builder.ConfigureDependencyInjection();
 
         var app = builder.Build();
+
+        app.UseMiddleware<ExceptionHandlingMiddleware>();
 
         app.UseCors();
         app.ConfigureEndpoints();
