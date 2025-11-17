@@ -37,7 +37,7 @@ public class BrevoService : IBrevoService
                 "Failed to add contact to newsletter.");
         }
 
-        await _emailService.SendNotificationToSubscribers($"New Subscriber: {email}",
+        _emailService.SendNotificationToSubscribers($"New Subscriber: {email}",
                 "https://app.brevo.com/contact/list-listing/id/2");
         return Response<string>.Success(successMessage, successMessage);
     }
