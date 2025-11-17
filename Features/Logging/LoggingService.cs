@@ -17,7 +17,7 @@ public class LoggingService : ILoggingService
         var message = $"Mosaic API | {ex.Message}";
         var builder = new StringBuilder();
 
-        builder.Append("<h1>Mosaic API | An exception occurred.</h1>");
+        builder.Append($"<h1>Mosaic API | {ex.Message}</h1>");
         builder.Append($"<p>{ex.Message}</p>");
 
         builder.Append("<h2>Data</h2>");

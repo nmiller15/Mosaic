@@ -8,11 +8,6 @@ public static class BrevoEndpointConfiguration
     {
         app.MapPost("/newsletter/", async (IBrevoService brevoService, [FromBody] EmailRequest request)
             => await brevoService.AddToNewsletter(request.Email));
-
-        app.MapGet("/ex", () =>
-        {
-            throw new Exception("Test exception from Brevo endpoints");
-        });
     }
 }
 
