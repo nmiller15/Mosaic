@@ -1,9 +1,9 @@
-using System.Net.Mail;
+using MimeKit;
 
 namespace Mosaic.Features.Email;
 
 public interface IEmailRepository
 {
-    Task SendEmail(MailMessage message);
-    Task SendNotificationToSubscribers(string message, string body = "");
+    Task<EmailResult> SendEmail(MimeMessage message);
+    Task<List<EmailResult>> SendNotificationToSubscribers(string message, string body = "");
 }

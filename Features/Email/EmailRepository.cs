@@ -1,7 +1,8 @@
 using System.Net;
-using System.Net.Mail;
 using Microsoft.Extensions.Options;
+using MimeKit;
 using Mosaic.Configuration;
+using SmtpClient = MailKit.Net.Smtp.SmtpClient;
 
 namespace Mosaic.Features.Email;
 
@@ -14,36 +15,56 @@ public class EmailRepository : IEmailRepository
         _emailSettings = options.Value;
     }
 
-    public async Task SendEmail(MailMessage message)
+    public async Task<List<EmailResult>> SendNotificationToSubscribers(string message, string body = "")
     {
-        var client = new SmtpClient
+        var results = new List<EmailResult>();
+        foreach (var sub in _emailSettings.Subscribers)
         {
-            Host = _emailSettings.SmtpServer,
-            Port = _emailSettings.SmtpPort,
-            EnableSsl = true,
-            DeliveryMethod = SmtpDeliveryMethod.Network,
-            UseDefaultCredentials = false,
-            Credentials = new NetworkCredential(_emailSettings.SmtpUser, _emailSettings.SmtpPassword)
-        };
-        message.From = new MailAddress(_emailSettings.SmtpSender, "Mosaic Notification");
-
-        await client.SendMailAsync(message);
-    }
-
-    public async Task SendNotificationToSubscribers(string message, string body = "")
-    {
-        foreach (string sub in _emailSettings.Subscribers)
-        {
-            var mailMessage = new MailMessage
+            var email = new MimeMessage()
             {
                 Subject = message,
-                Body = body
+                Body = new BodyBuilder() { HtmlBody = body, }.ToMessageBody(),
             };
+            email.From.Add(new MailboxAddress("Mosaic", _emailSettings.SmtpSender));
+            email.To.Add(new MailboxAddress(null, sub));
 
-            mailMessage.To.Add(sub);
-
-            await SendEmail(mailMessage);
+            var result = await SendEmail(email);
+            results.Add(result);
         }
+        return results;
     }
 
+    public async Task<EmailResult> SendEmail(MimeMessage email)
+    {
+        NetworkCredential credentials = new()
+        {
+            UserName = _emailSettings.SmtpUser,
+            Password = _emailSettings.SmtpPassword
+        };
+
+        using SmtpClient client = new();
+        try
+        {
+            await client.ConnectAsync(
+                    _emailSettings.SmtpServer,
+                    _emailSettings.SmtpPort,
+                    MailKit.Security.SecureSocketOptions.StartTls
+                );
+            await client.AuthenticateAsync(credentials);
+            await client.SendAsync(email);
+            return new EmailResult
+            {
+                WasSuccessful = true,
+                Message = string.Empty
+            };
+        }
+        catch (Exception ex)
+        {
+            return new EmailResult
+            {
+                WasSuccessful = false,
+                Message = ex.Message
+            };
+        }
+    }
 }

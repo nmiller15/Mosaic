@@ -11,6 +11,7 @@ public class LoggingService : ILoggingService
     {
     }
 
+    // Add this to global error handling
     public Task LogException(Exception ex)
     {
         throw new NotImplementedException();

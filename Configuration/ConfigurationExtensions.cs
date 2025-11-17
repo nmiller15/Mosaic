@@ -23,7 +23,7 @@ public static class ConfigurationExtensions
     public static void ConfigureEmailSettings(this WebApplicationBuilder builder)
     {
         builder.Services.Configure<EmailSettings>(
-                builder.Configuration.GetSection("Email")
+                builder.Configuration.GetSection("Zoho")
                 );
     }
 
