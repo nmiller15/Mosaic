@@ -34,6 +34,9 @@ public class EmailRepository : IEmailRepository
         return results;
     }
 
+    public async Task<EmailResult> SendEmail(Email email)
+        => await SendEmail(email.ToMimeMessage());
+
     public async Task<EmailResult> SendEmail(MimeMessage email)
     {
         NetworkCredential credentials = new()
@@ -66,5 +69,16 @@ public class EmailRepository : IEmailRepository
                 Message = ex.Message
             };
         }
+    }
+
+    public async Task<EmailResult> SendEmailFromMosaicSender(Email email)
+    {
+        email.From = new EmailAddress()
+        {
+            DisplayName = "Mosaic",
+            Address = _emailSettings.SmtpSender
+        };
+
+        return await SendEmail(email);
     }
 }

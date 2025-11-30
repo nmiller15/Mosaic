@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Authentication;
 using Mosaic;
+using Mosaic.Auth;
 using Mosaic.Configuration;
 using Mosaic.Features.Logging;
 using Mosaic.Shared;
@@ -10,7 +12,9 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
 
         builder.Configure();
+        builder.ConfigureApplicationWhitelist();
         builder.ConfigureEmailSettings();
+        builder.ConfigureThingsSettings();
         builder.ConfigureUrls();
         builder.ConfigureCors();
 
@@ -21,12 +25,21 @@ public class Program
             client.DefaultRequestHeaders.Add("Accept", "application/json");
         });
 
+        builder.Services
+            .AddAuthentication(ApiKeyAuthenticationHandler.SchemeName)
+            .AddScheme<AuthenticationSchemeOptions, ApiKeyAuthenticationHandler>(
+                    ApiKeyAuthenticationHandler.SchemeName, null);
+
+        builder.Services.AddAuthorization();
+
         builder.ConfigureDependencyInjection();
 
         var app = builder.Build();
 
         app.UseMiddleware<ExceptionHandlingMiddleware>();
 
+        app.UseAuthentication();
+        app.UseAuthorization();
         app.UseCors();
         app.ConfigureEndpoints();
 

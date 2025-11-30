@@ -1,3 +1,5 @@
+using Mosaic.Auth;
+
 namespace Mosaic.Configuration;
 
 public static class ConfigurationExtensions
@@ -20,10 +22,23 @@ public static class ConfigurationExtensions
         }
     }
 
+    public static void ConfigureApplicationWhitelist(this WebApplicationBuilder builder)
+    {
+        builder.Services.Configure<List<WhitelistedClient>>(
+                builder.Configuration.GetSection("ApplicationWhitelist"));
+    }
+
     public static void ConfigureEmailSettings(this WebApplicationBuilder builder)
     {
         builder.Services.Configure<EmailSettings>(
                 builder.Configuration.GetSection("Zoho")
+                );
+    }
+
+    public static void ConfigureThingsSettings(this WebApplicationBuilder builder)
+    {
+        builder.Services.Configure<ThingsSettings>(
+                builder.Configuration.GetSection("Things")
                 );
     }
 

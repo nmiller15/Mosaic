@@ -1,5 +1,5 @@
 using System.Text.RegularExpressions;
-using MimeKit;
+using Mosaic.Shared;
 
 namespace Mosaic.Features.Email
 {
@@ -10,6 +10,22 @@ namespace Mosaic.Features.Email
         public EmailService(IEmailRepository emailRepository)
         {
             _emailRepository = emailRepository;
+        }
+
+        public async Task<Response<bool>> SendEmail(Email email)
+        {
+            var response = await _emailRepository.SendEmail(email);
+            return response.WasSuccessful
+                ? Response<bool>.Success(true)
+                : Response<bool>.Failure("Failed to send email.");
+        }
+
+        public async Task<Response<bool>> SendEmailFromMosaicSender(Email email)
+        {
+            var response = await _emailRepository.SendEmailFromMosaicSender(email);
+            return response.WasSuccessful
+                ? Response<bool>.Success(true)
+                : Response<bool>.Failure("Failted to send email.");
         }
 
         public async Task SendNotificationToSubscribers(string message, string body = "")
