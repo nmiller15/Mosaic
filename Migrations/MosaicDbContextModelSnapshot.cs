@@ -83,12 +83,8 @@ namespace Mosaic.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Environment")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
                     b.Property<string>("Exception")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Level")
@@ -96,35 +92,25 @@ namespace Mosaic.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)");
 
-                    b.Property<string>("Message")
+                    b.Property<string>("MessageTemplate")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<IDictionary<string, string>>("Properties")
+                    b.Property<Dictionary<string, string>>("Properties")
                         .HasColumnType("jsonb");
 
-                    b.Property<int>("SourceKey")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("StackTrace")
+                    b.Property<string>("RenderedMessage")
+                        .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<DateTime>("Timestamp")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SourceKey");
-
                     b.ToTable("LogMessages");
-                });
-
-            modelBuilder.Entity("Mosaic.Features.Chipper.LogMessage", b =>
-                {
-                    b.HasOne("Mosaic.Features.Chipper.AppSource", "AppSource")
-                        .WithMany()
-                        .HasForeignKey("SourceKey")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("AppSource");
                 });
 #pragma warning restore 612, 618
         }

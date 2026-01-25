@@ -26,7 +26,7 @@ public class MosaicDbContext : DbContext
             entity.Property(e => e.Level).IsRequired().HasMaxLength(20);
             entity.Property(e => e.MessageTemplate).IsRequired();
             entity.Property(e => e.RenderedMessage);
-            entity.Property(e => e.Properties).HasColumnType("jsonb");
+            entity.Property(e => e.Properties).HasColumnType("jsonb").IsRequired(false);
             entity.Property(e => e.Exception);
         });
 
