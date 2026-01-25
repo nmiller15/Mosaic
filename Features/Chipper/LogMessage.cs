@@ -19,7 +19,7 @@ public class LogMessage
 
     public string RenderedMessage { get; set; } = string.Empty;
 
-    public Dictionary<string, string> Properties { get; set; } = new Dictionary<string, string>();
+    public Dictionary<string, object> Properties { get; set; } = new();
 
     public string Exception { get; set; } = string.Empty;
 }

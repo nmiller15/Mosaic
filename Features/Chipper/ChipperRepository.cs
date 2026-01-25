@@ -50,11 +50,11 @@ public class ChipperRepository : IChipperRepository
         return level.ToLower() switch
         {
             "debug" => 1,
-            "info" => 2,
+            "information" => 2,
             "warning" => 3,
             "error" => 4,
             "critical" => 5,
-            _ => throw new InvalidOperationException("Invalid log level"),
+            _ => throw new InvalidOperationException($"Invalid log level string: \"{level}\""),
         };
     }
 
@@ -63,11 +63,11 @@ public class ChipperRepository : IChipperRepository
         return priority switch
         {
             1 => "debug",
-            2 => "info",
+            2 => "information",
             3 => "warning",
             4 => "error",
             5 => "critical",
-            _ => throw new InvalidOperationException("Invalid log integer")
+            _ => throw new InvalidOperationException($"Invalid log integer: \"{priority}\""),
         };
     }
 }

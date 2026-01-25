@@ -4,6 +4,7 @@ using Mosaic.Auth;
 using Mosaic.Configuration;
 using Mosaic.Features.Logging;
 using Mosaic.Shared;
+using Npgsql;
 
 public class Program
 {
@@ -33,6 +34,8 @@ public class Program
         builder.Services.AddAuthorization();
 
         builder.ConfigureDependencyInjection();
+
+        NpgsqlConnection.GlobalTypeMapper.EnableDynamicJson();
 
         var app = builder.Build();
 

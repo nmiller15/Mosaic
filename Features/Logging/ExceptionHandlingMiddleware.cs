@@ -21,7 +21,10 @@ public class ExceptionHandlingMiddleware
         }
         catch (Exception ex)
         {
+#if !DEBUG
             await _logger.LogException(ex);
+#endif 
+            Console.Error.WriteLine($"Exception caught: {ex.Message}");
             context.Response.StatusCode = 500;
             await context.Response.WriteAsync("An unexpected error occurred.");
         }

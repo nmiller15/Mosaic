@@ -5,6 +5,6 @@ namespace Mosaic.Features.Chipper;
 
 public interface IChipperService
 {
-    Task<Response<bool>> Log(LogMessage message);
+    Task<Response<bool>> Log(List<LogMessage> messages);
     Task<Response<bool>> UpdateSubscription(AppSourceSubscriber subscriber);
 }

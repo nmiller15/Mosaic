@@ -16,7 +16,16 @@ public class ChipperService : IChipperService
         _emailRepository = emailRepository;
     }
 
-    public async Task<Response<bool>> Log(LogMessage message)
+    public async Task<Response<bool>> Log(List<LogMessage> messages)
+    {
+        foreach (var m in messages)
+        {
+            await Log(m);
+        }
+        return Response<bool>.Success(true);
+    }
+
+    private async Task Log(LogMessage message)
     {
         await _chipperRepository.AddLogMessage(message);
         var subscribers = await _chipperRepository.GetAppSourceSubscribers(1, message.Level);
@@ -29,8 +38,6 @@ public class ChipperService : IChipperService
                 Body = ToEmailBodyString(message)
             });
         }
-
-        return Response<bool>.Success(true);
     }
 
     public async Task<Response<bool>> UpdateSubscription(AppSourceSubscriber subscriber)
