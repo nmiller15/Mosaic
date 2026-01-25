@@ -1,7 +1,9 @@
 using Mosaic.Features.Brevo;
+using Mosaic.Features.Chipper;
 using Mosaic.Features.Email;
 using Mosaic.Features.Logging;
 using Mosaic.Features.Things;
+using Mosaic.Shared;
 
 namespace Mosaic.Configuration;
 
@@ -9,6 +11,7 @@ public static class ConfigureDependencyInjectionExtensions
 {
     public static void ConfigureDependencyInjection(this WebApplicationBuilder builder)
     {
+        builder.ConfigureMosaicDbContext();
         builder.ConfigureRoots();
         builder.ConfigureRepositories();
         builder.ConfigureServices();
@@ -22,12 +25,14 @@ public static class ConfigureDependencyInjectionExtensions
 
     public static void ConfigureRepositories(this WebApplicationBuilder builder)
     {
+        builder.Services.AddScoped<IChipperRepository, ChipperRepository>();
         builder.Services.AddScoped<IBrevoRepository, BrevoRepository>();
         builder.Services.AddScoped<IThingsRepository, ThingsRepository>();
     }
 
     public static void ConfigureServices(this WebApplicationBuilder builder)
     {
+        builder.Services.AddScoped<IChipperService, ChipperService>();
         builder.Services.AddScoped<IBrevoService, BrevoService>();
         builder.Services.AddScoped<IEmailService, EmailService>();
         builder.Services.AddScoped<IThingsService, ThingsService>();

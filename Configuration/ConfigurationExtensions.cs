@@ -1,4 +1,6 @@
 using Mosaic.Auth;
+using Mosaic.Shared;
+using Microsoft.EntityFrameworkCore;
 
 namespace Mosaic.Configuration;
 
@@ -21,6 +23,8 @@ public static class ConfigurationExtensions
                     );
         }
     }
+
+
 
     public static void ConfigureApplicationWhitelist(this WebApplicationBuilder builder)
     {
@@ -45,6 +49,13 @@ public static class ConfigurationExtensions
     public static void ConfigureUrls(this WebApplicationBuilder builder)
     {
         builder.WebHost.UseUrls(builder.Configuration["ApplicationUrl"]);
+    }
+
+    public static void ConfigureMosaicDbContext(this WebApplicationBuilder builder)
+    {
+        var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+        builder.Services.AddDbContext<MosaicDbContext>(options =>
+            options.UseNpgsql(connectionString));
     }
 
     public static void ConfigureCors(this WebApplicationBuilder builder)
