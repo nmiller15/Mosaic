@@ -22,19 +22,12 @@ public class MosaicDbContext : DbContext
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.SourceKey).IsRequired();
-            entity.Property(e => e.Environment).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.Timestamp).HasDefaultValueSql("CURRENT_TIMESTAMP");
             entity.Property(e => e.Level).IsRequired().HasMaxLength(20);
-            entity.Property(e => e.Message).IsRequired();
-            entity.Property(e => e.Exception);
-            entity.Property(e => e.StackTrace);
+            entity.Property(e => e.MessageTemplate).IsRequired();
+            entity.Property(e => e.RenderedMessage);
             entity.Property(e => e.Properties).HasColumnType("jsonb");
-            
-            // Foreign key relationship to AppSource
-            entity.HasOne(e => e.AppSource)
-                  .WithMany()
-                  .HasForeignKey(e => e.SourceKey)
-                  .HasPrincipalKey(a => a.Id);
+            entity.Property(e => e.Exception);
         });
 
         // Configure AppSource entity
@@ -45,7 +38,7 @@ public class MosaicDbContext : DbContext
             entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
             entity.Property(e => e.Description).HasMaxLength(500);
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
-            
+
             // Seed initial data
             entity.HasData(
                 new AppSource { Id = 1, Name = "Investigations", Description = "Investigations app source", CreatedAt = new DateTime(2026, 1, 25, 0, 0, 0, DateTimeKind.Utc) }

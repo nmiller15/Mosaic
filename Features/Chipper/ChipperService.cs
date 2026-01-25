@@ -19,14 +19,13 @@ public class ChipperService : IChipperService
     public async Task<Response<bool>> Log(LogMessage message)
     {
         await _chipperRepository.AddLogMessage(message);
-        Console.WriteLine($"Logged message from source {message.SourceKey} at level {message.Level}");
-        var subscribers = await _chipperRepository.GetAppSourceSubscribers(message.SourceKey, message.Level);
+        var subscribers = await _chipperRepository.GetAppSourceSubscribers(1, message.Level);
         foreach (var sub in subscribers)
         {
             await _emailRepository.SendEmailFromMosaicSender(new Email.Email()
             {
                 To = new EmailAddress() { Address = sub.Email, DisplayName = string.Empty },
-                Subject = $"({message.SourceKey}) - {message.Message}",
+                Subject = $"(Investigations) - {message.RenderedMessage}",
                 Body = ToEmailBodyString(message)
             });
         }
@@ -44,24 +43,13 @@ public class ChipperService : IChipperService
     {
         var builder = new StringBuilder();
 
-        builder.Append($"<h1>({message.SourceKey}) - {message.Level}</h1>");
-        builder.Append($"<p>{message.Message}</p>");
-
-        if (!string.IsNullOrEmpty(message.Environment))
-        {
-            builder.Append($"<p><strong>Environment:</strong> {message.Environment}</p>");
-        }
+        builder.Append($"<h1>(Investigations) - {message.Level}</h1>");
+        builder.Append($"<p>{message.RenderedMessage}</p>");
 
         if (!string.IsNullOrEmpty(message.Exception))
         {
             builder.Append("<h2>Exception</h2>");
             builder.Append($"<p>{message.Exception}</p>");
-        }
-
-        if (!string.IsNullOrEmpty(message.StackTrace))
-        {
-            builder.Append("<h2>Stack Trace</h2>");
-            builder.Append($"<pre>{message.StackTrace}</pre>");
         }
 
         if (message.Properties != null && message.Properties.Count > 0)

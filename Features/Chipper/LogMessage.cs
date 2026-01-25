@@ -8,26 +8,18 @@ public class LogMessage
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
-    
-    [Required]
-    public int SourceKey { get; set; }
-    
-    [Required]
-    [MaxLength(50)]
-    public string Environment { get; set; } = string.Empty;
-    
+
+    public DateTime Timestamp { get; set; }
+
     [Required]
     [MaxLength(20)]
     public string Level { get; set; } = string.Empty;
 
-    [Required]
-    public string Message { get; set; } = string.Empty;
+    public string MessageTemplate { get; set; } = string.Empty;
 
-    public string? Exception { get; set; }
-    public string? StackTrace { get; set; }
+    public string RenderedMessage { get; set; } = string.Empty;
 
-    public IDictionary<string, string>? Properties { get; set; }
+    public Dictionary<string, string> Properties { get; set; } = new Dictionary<string, string>();
 
-    // Navigation property to AppSource
-    public AppSource? AppSource { get; set; }
+    public string Exception { get; set; } = string.Empty;
 }
