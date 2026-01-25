@@ -47,7 +47,7 @@ jobs:
 
       - name: Generate Migration Bundle
         run: |
-          ASPNETCORE_ENVIRONMENT=Production dotnet ef migrations bundle --runtime linux-x64 --self-contained --output ./publish/efbundle --verbose
+          ASPNETCORE_ENVIRONMENT=Production dotnet ef migrations bundle --runtime linux-x64 --self-contained --output ./publish/efbundle --verbose -- --bootstrap
 
       - name: Publish Mosaic
         run: |
