@@ -1,3 +1,6 @@
+using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.Extensions.Options;
 using Mosaic.Auth;
 using Mosaic.Shared;
 using Microsoft.EntityFrameworkCore;
@@ -80,6 +83,47 @@ public static class ConfigurationExtensions
                     .AllowAnyMethod();
                 });
             }
+        });
+    }
+
+    public static void ConfigureRateLimiting(this WebApplicationBuilder builder)
+    {
+        builder.Services.Configure<RateLimitSettings>(
+                builder.Configuration.GetSection("RateLimiting"));
+
+        builder.Services.AddRateLimiter(options =>
+        {
+            options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+            options.OnRejected = async (context, cancellationToken) =>
+            {
+                var retryAfterSeconds = 60;
+                if (context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter))
+                {
+                    retryAfterSeconds = (int)retryAfter.TotalSeconds;
+                }
+
+                context.HttpContext.Response.Headers.RetryAfter = retryAfterSeconds.ToString();
+
+                await context.HttpContext.Response.WriteAsJsonAsync(new
+                {
+                    wasSuccessful = false,
+                    message = "Rate limit exceeded. Please try again later."
+                }, cancellationToken);
+            };
+
+            options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
+            {
+                var clientName = context.User?.Identity?.Name ?? context.Connection.RemoteIpAddress?.ToString() ?? "anonymous";
+                return RateLimitPartition.GetFixedWindowLimiter(clientName, _ => new FixedWindowRateLimiterOptions
+                {
+                    PermitLimit = builder.Configuration.GetValue<int>("RateLimiting:PermitLimit", 100),
+                    Window = TimeSpan.FromSeconds(
+                        builder.Configuration.GetValue<int>("RateLimiting:WindowSeconds", 60)),
+                    QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                    QueueLimit = 0
+                });
+            });
         });
     }
 }

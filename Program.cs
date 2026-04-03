@@ -33,6 +33,8 @@ public class Program
 
         builder.Services.AddAuthorization();
 
+        builder.ConfigureRateLimiting();
+
         builder.ConfigureDependencyInjection();
 
         NpgsqlConnection.GlobalTypeMapper.EnableDynamicJson();
@@ -42,6 +44,7 @@ public class Program
         app.UseMiddleware<ExceptionHandlingMiddleware>();
 
         app.UseAuthentication();
+        app.UseRateLimiter();
         app.UseAuthorization();
         app.UseCors();
         app.ConfigureEndpoints();
