@@ -3,6 +3,7 @@ using Mosaic.Features.Chipper;
 using Mosaic.Features.Email;
 using Mosaic.Features.Logging;
 using Mosaic.Features.Things;
+using Mosaic.Features.Turnstile;
 using Mosaic.Shared;
 
 namespace Mosaic.Configuration;
@@ -36,5 +37,6 @@ public static class ConfigureDependencyInjectionExtensions
         builder.Services.AddScoped<IBrevoService, BrevoService>();
         builder.Services.AddScoped<IEmailService, EmailService>();
         builder.Services.AddScoped<IThingsService, ThingsService>();
+        builder.Services.AddScoped<ITurnstileService, TurnstileService>();
     }
 }

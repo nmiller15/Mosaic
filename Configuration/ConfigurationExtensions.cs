@@ -2,6 +2,7 @@ using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Options;
 using Mosaic.Auth;
+using Mosaic.Features.Turnstile;
 using Mosaic.Shared;
 using Microsoft.EntityFrameworkCore;
 
@@ -46,6 +47,13 @@ public static class ConfigurationExtensions
     {
         builder.Services.Configure<ThingsSettings>(
                 builder.Configuration.GetSection("Things")
+                );
+    }
+
+    public static void ConfigureTurnstileSettings(this WebApplicationBuilder builder)
+    {
+        builder.Services.Configure<TurnstileSettings>(
+                builder.Configuration.GetSection("Turnstile")
                 );
     }
 

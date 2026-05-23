@@ -3,6 +3,7 @@ using Mosaic;
 using Mosaic.Auth;
 using Mosaic.Configuration;
 using Mosaic.Features.Logging;
+using Mosaic.Features.Turnstile;
 using Mosaic.Shared;
 using Npgsql;
 
@@ -16,6 +17,7 @@ public class Program
         builder.ConfigureApplicationWhitelist();
         builder.ConfigureEmailSettings();
         builder.ConfigureThingsSettings();
+        builder.ConfigureTurnstileSettings();
         builder.ConfigureUrls();
         builder.ConfigureCors();
 
@@ -23,6 +25,12 @@ public class Program
         {
             client.BaseAddress = new Uri(builder.Configuration["Brevo:BaseUrl"]);
             client.DefaultRequestHeaders.Add("api-key", builder.Configuration["Brevo:ApiKey"]);
+            client.DefaultRequestHeaders.Add("Accept", "application/json");
+        });
+
+        builder.Services.AddHttpClient("Turnstile", client =>
+        {
+            client.BaseAddress = new Uri(builder.Configuration["Turnstile:VerifyUrl"]);
             client.DefaultRequestHeaders.Add("Accept", "application/json");
         });
 

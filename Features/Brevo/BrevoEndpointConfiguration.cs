@@ -7,11 +7,12 @@ public static class BrevoEndpointConfiguration
     public static void ConfigureBrevoEndpoints(this WebApplication app)
     {
         app.MapPost("/newsletter/", async (IBrevoService brevoService, [FromBody] EmailRequest request)
-            => await brevoService.AddToNewsletter(request.Email));
+            => await brevoService.AddToNewsletter(request.Email, request.TurnstileToken));
     }
 }
 
 public record EmailRequest()
 {
-    public string Email { get; set; }
+    public string Email { get; set; } = string.Empty;
+    public string TurnstileToken { get; set; } = string.Empty;
 }

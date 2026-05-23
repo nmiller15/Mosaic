@@ -1,5 +1,6 @@
 using Mosaic.Features.Brevo;
 using Mosaic.Features.Chipper;
+using Mosaic.Features.Test;
 using Mosaic.Features.Things;
 
 namespace Mosaic.Configuration;
@@ -13,5 +14,6 @@ public static class EndpointConfig
         app.ConfigureBrevoEndpoints();
         app.ConfigureThingsEndpoints();
         app.ConfigureChipperEndpoints();
+        app.ConfigureTestEndpoints();
     }
 }

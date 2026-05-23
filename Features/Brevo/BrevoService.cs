@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using Mosaic.Features.Email;
+using Mosaic.Features.Turnstile;
 using Mosaic.Shared;
 
 namespace Mosaic.Features.Brevo;
@@ -8,25 +9,43 @@ public class BrevoService : IBrevoService
 {
     private readonly IBrevoRepository _brevoRepository;
     private readonly IEmailService _emailService;
+    private readonly ITurnstileService _turnstileService;
 
-    public BrevoService(IBrevoRepository brevoRepository, IEmailService emailService)
+    public BrevoService(
+        IBrevoRepository brevoRepository,
+        IEmailService emailService,
+        ITurnstileService turnstileService)
     {
         _brevoRepository = brevoRepository;
         _emailService = emailService;
+        _turnstileService = turnstileService;
     }
 
-    public async Task<Response<string>> AddToNewsletter(string email)
+    public async Task<Response<string>> AddToNewsletter(string email, string turnstileToken)
     {
-        if (!_emailService.ValidateEmail(Normalize(email)))
+        var normalizedEmail = Normalize(email);
+
+        if (!_emailService.ValidateEmail(normalizedEmail))
         {
             return Response<string>.Failure("Invalid email address.");
+        }
+
+        if (string.IsNullOrWhiteSpace(turnstileToken))
+        {
+            return Response<string>.Failure("Turnstile verification is required.");
+        }
+
+        var turnstileResponse = await _turnstileService.Verify(turnstileToken);
+        if (!turnstileResponse.WasSuccessful || !turnstileResponse.Data)
+        {
+            return Response<string>.Failure("Turnstile verification failed.");
         }
 
         // Ask brevo if contact exists?
 
         var id = await _brevoRepository.AddContact(new Contact
         {
-            Email = email
+            Email = normalizedEmail
         });
 
         var successMessage = "You were successfully subscribed!";
@@ -37,7 +56,7 @@ public class BrevoService : IBrevoService
                 "Failed to add contact to newsletter.");
         }
 
-        _emailService.SendNotificationToSubscribers($"New Subscriber: {email}",
+        await _emailService.SendNotificationToSubscribers($"New Subscriber: {normalizedEmail}",
                 "https://app.brevo.com/contact/list-listing/id/2");
         return Response<string>.Success(successMessage, successMessage);
     }
