@@ -52,6 +52,9 @@ public class BrevoService : IBrevoService
 
         if (id < 0)
         {
+            await _emailService.SendNotificationToSubscribers(
+                $"Newsletter Signup Failed: {normalizedEmail}",
+                "Failed to add contact to Brevo newsletter. Please check the Brevo dashboard.");
             return Response<string>.Failure(
                 "Failed to add contact to newsletter.");
         }
