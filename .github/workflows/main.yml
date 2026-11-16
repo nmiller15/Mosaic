@@ -32,11 +32,6 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_PUBLIC_IP }} "echo Hello World"
 
-      - name: Install EF Core Tools (Local)
-        run: |
-          dotnet tool install --global dotnet-ef
-          echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
-
       - name: Build Mosaic
         run: |
           dotnet build
@@ -45,10 +40,6 @@ jobs:
         run: |
           dotnet restore --runtime linux-x64
 
-      - name: Generate Migration Bundle
-        run: |
-          ASPNETCORE_ENVIRONMENT=Production dotnet ef migrations bundle --runtime linux-x64 --self-contained --output ./publish/efbundle --verbose -- --bootstrap
-
       - name: Publish Mosaic
         run: |
           dotnet publish -c Release -r linux-x64 --self-contained true -o ./publish 
@@ -56,10 +47,6 @@ jobs:
       - name: Deploy to EC2
         run: |
           rsync -avzO --no-perms --delete --exclude="mosaic.settings.development.json" ./publish/ ubuntu@${{ secrets.EC2_PUBLIC_IP }}:/srv/Mosaic/
-
-      - name: Run Migration Bundle on EC2
-        run: |
-          ssh ubuntu@${{ secrets.EC2_PUBLIC_IP }} "cd /srv/Mosaic && ASPNETCORE_ENVIRONMENT=Production ./efbundle --verbose"
 
       - name: Restart API
         run: |

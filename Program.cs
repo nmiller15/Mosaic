@@ -5,7 +5,6 @@ using Mosaic.Configuration;
 using Mosaic.Features.Logging;
 using Mosaic.Features.Turnstile;
 using Mosaic.Shared;
-using Npgsql;
 
 public class Program
 {
@@ -61,8 +60,6 @@ public class Program
         builder.ConfigureRateLimiting();
 
         builder.ConfigureDependencyInjection();
-
-        NpgsqlConnection.GlobalTypeMapper.EnableDynamicJson();
 
         var app = builder.Build();
 
