@@ -23,14 +23,31 @@ public class Program
 
         builder.Services.AddHttpClient("Brevo", client =>
         {
-            client.BaseAddress = new Uri(builder.Configuration["Brevo:BaseUrl"]);
-            client.DefaultRequestHeaders.Add("api-key", builder.Configuration["Brevo:ApiKey"]);
+            var url = builder.Configuration["Brevo:BaseUrl"] ?? throw new ApplicationException("Brevo:BaseUrl configuration missing.");
+            var key = builder.Configuration["Brevo:ApiKey"] ?? throw new ApplicationException("Brevo:ApiKey configuration missing.");
+
+            client.BaseAddress = new Uri(url);
+            client.DefaultRequestHeaders.Add("api-key", key);
+            client.DefaultRequestHeaders.Add("Accept", "application/json");
+        });
+
+        builder.Services.AddHttpClient("Gotify", client =>
+        {
+            var url = builder.Configuration["Gotify:GotifyUrl"] ?? throw new ApplicationException("Gotify:GotifyUrl configuration missing.");
+            var key = builder.Configuration["Gotify:GotifyToken"] ?? throw new ApplicationException("Gotify:GotifyToken configuration missing.");
+
+            Console.WriteLine(url);
+            Console.WriteLine(key);
+
+            client.BaseAddress = new Uri(url);
+            client.DefaultRequestHeaders.Add("X-Gotify-Key", key);
             client.DefaultRequestHeaders.Add("Accept", "application/json");
         });
 
         builder.Services.AddHttpClient("Turnstile", client =>
         {
-            client.BaseAddress = new Uri(builder.Configuration["Turnstile:VerifyUrl"]);
+            var url = builder.Configuration["Turnstile:VerifyUrl"] ?? throw new ApplicationException("Turnstile:VerifyUrl configuration missing");
+            client.BaseAddress = new Uri(url);
             client.DefaultRequestHeaders.Add("Accept", "application/json");
         });
 

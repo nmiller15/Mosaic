@@ -2,6 +2,7 @@ using Mosaic.Features.Brevo;
 using Mosaic.Features.Chipper;
 using Mosaic.Features.Email;
 using Mosaic.Features.Logging;
+using Mosaic.Features.Notifications;
 using Mosaic.Features.Things;
 using Mosaic.Features.Turnstile;
 using Mosaic.Shared;
@@ -20,6 +21,7 @@ public static class ConfigureDependencyInjectionExtensions
 
     public static void ConfigureRoots(this WebApplicationBuilder builder)
     {
+        builder.Services.AddSingleton<INotificationRepository, NotificationRepository>();
         builder.Services.AddSingleton<IEmailRepository, EmailRepository>();
         builder.Services.AddSingleton<ILoggingService, LoggingService>();
     }

@@ -1,36 +1,36 @@
 using System.Text;
 using Mosaic.Features.Email;
+using Mosaic.Features.Notifications;
 
 namespace Mosaic.Features.Logging;
 
 public class LoggingService : ILoggingService
 {
-    private readonly IEmailRepository _emailRepository;
+    private readonly INotificationRepository _notificationRepository;
 
-    public LoggingService(IEmailRepository emailRepository)
+    public LoggingService(INotificationRepository notificationRepository)
     {
-        _emailRepository = emailRepository;
+        _notificationRepository = notificationRepository;
     }
 
     public async Task LogException(Exception ex)
     {
-        var message = $"Mosaic API | {ex.Message}";
         var builder = new StringBuilder();
 
-        builder.Append($"<h1>Mosaic API | {ex.Message}</h1>");
-        builder.Append($"<p>{ex.Message}</p>");
-
-        builder.Append("<h2>Data</h2>");
-        builder.Append("<ul>");
+        builder.AppendLine(ex.Message + "\n\n");
         foreach (var key in ex.Data.Keys)
         {
-            builder.Append($"<li>{key}: {ex.Data[key]}</li>");
+            builder.AppendLine($"{key}: {ex.Data[key]}");
         }
-        builder.Append("</ul>");
+        builder.AppendLine("\n");
+        builder.AppendLine(ex.StackTrace);
 
-        builder.Append("<h2>Stack Trace</h2>");
-        builder.Append($"<pre>{ex.StackTrace}</pre>");
+        var notification = new Notification
+        {
+            Title = ex.Message,
+            Message = builder.ToString()
+        };
 
-        await _emailRepository.SendNotificationToSubscribers(message, builder.ToString());
+        await _notificationRepository.Send(notification);
     }
 }
